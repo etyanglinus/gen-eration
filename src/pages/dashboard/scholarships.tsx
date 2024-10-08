@@ -1,14 +1,23 @@
 import { useEffect, useState } from 'react';
 import DashboardLayout from '../../components/Dashboard/DashboardLayout';
 
+// Define the type for each scholarship object
+interface Scholarship {
+  id: number;
+  name: string;
+  description: string;
+  link: string;
+}
+
 const Scholarships = () => {
-  const [scholarships, setScholarships] = useState([]);
+  // Use the correct type for scholarships state
+  const [scholarships, setScholarships] = useState<Scholarship[]>([]);
   const [loading, setLoading] = useState(true);
 
   // Simulate fetching scholarships from an API based on user profile
   const fetchScholarships = async () => {
     // Sample data simulating an API response
-    const sampleScholarships = [
+    const sampleScholarships: Scholarship[] = [
       {
         id: 1,
         name: 'Academic Excellence Scholarship',
