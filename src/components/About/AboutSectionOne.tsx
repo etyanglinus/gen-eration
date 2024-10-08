@@ -25,7 +25,7 @@ const AboutSectionOne = () => {
             <div className="w-full px-4 lg:w-1/2">
               <SectionTitle
                 title="Crafted for Startup, SaaS and Business Sites."
-                paragraph="The main ‘thrust’ is to focus on educating attendees on how to best protect highly vulnerable business applications with interactive panel discussions and roundtables."
+                paragraph="At Amsha Generation, we go beyond just offering financial services. We are a community-driven platform that provides access to workshops, mentorship, and resources designed to inspire and guide users on their financial journey."
                 mb="44px"
               />
 
