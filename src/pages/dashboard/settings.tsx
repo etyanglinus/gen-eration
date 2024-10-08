@@ -1,14 +1,23 @@
 import { useEffect, useState } from 'react';
 import DashboardLayout from '../../components/Dashboard/DashboardLayout';
 
+// Define the type for the settings
+interface Setting {
+  id: number;
+  name: string;
+  description: string;
+  link: string;
+}
+
 const Settings = () => {
-  const [settings, setSettings] = useState([]);
+  // Use the Setting[] type for the useState hook
+  const [settings, setSettings] = useState<Setting[]>([]);
   const [loading, setLoading] = useState(true);
 
   // Simulate fetching settings from an API
   const fetchSettings = async () => {
     // Sample data simulating an API response
-    const sampleSettings = [
+    const sampleSettings: Setting[] = [
       {
         id: 1,
         name: 'Account Settings',
