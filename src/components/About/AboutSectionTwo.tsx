@@ -35,9 +35,10 @@ const AboutSectionTwo = () => {
                   Our Mission
                 </h3>
                 <p className="text-base font-medium leading-relaxed text-body-color sm:text-lg sm:leading-relaxed">
-                  Our mission is to deliver high-quality software solutions that
-                  empower businesses to grow and succeed. We aim to provide innovative
-                  and reliable technology that is easy to use and accessible to everyone.
+                  Amsha Generation is dedicated to enabling students to start saving 
+                  early, providing them with the tools and financial knowledge necessary 
+                  to create a stable and prosperous future as they transition 
+                  from education to their professional lives
                 </p>
               </div>
 
@@ -47,9 +48,9 @@ const AboutSectionTwo = () => {
                   Our Vision
                 </h3>
                 <p className="text-base font-medium leading-relaxed text-body-color sm:text-lg sm:leading-relaxed">
-                  Our vision is to be a global leader in the tech industry, setting new standards
-                  for excellence through innovation, inclusivity, and integrity. We envision a
-                  future where technology drives positive change and improves lives worldwide.
+                  To build a financially secure future for every young adult in Kenya, 
+                  empowering generations through smart savings and 
+                  financial literacy.
                 </p>
               </div>
             </div>
