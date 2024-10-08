@@ -33,17 +33,22 @@ const AboutSectionOne = () => {
                 className="mb-12 max-w-[570px] lg:mb-0"
                 data-wow-delay=".15s"
               >
-                <div className="mx-[-12px] flex flex-wrap">
-                  <div className="w-full px-3 sm:w-1/2 lg:w-full xl:w-1/2">
-                    <List text="Premium quality" />
-                    <List text="Tailwind CSS" />
-                    <List text="Use for lifetime" />
-                  </div>
 
-                  <div className="w-full px-3 sm:w-1/2 lg:w-full xl:w-1/2">
-                    <List text="Next.js" />
-                    <List text="Rich documentation" />
-                    <List text="Developer friendly" />
+              <div className="relative mx-auto aspect-[25/24] max-w-[500px] lg:mr-0">
+                <Image
+                  src="/images/about/about-image.svg"
+                  alt="about-image"
+                  fill
+                  className="mx-auto max-w-full drop-shadow-three dark:hidden dark:drop-shadow-none lg:mr-0"
+                />
+                <Image
+                  src="/images/about/about-image-dark.svg"
+                  alt="about-image"
+                  fill
+                  className="mx-auto hidden max-w-full drop-shadow-three dark:block dark:drop-shadow-none lg:mr-0"
+                />
+              </div>
+            </div>
                   </div>
                 </div>
               </div>
