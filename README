@@ -1,4 +1,6 @@
-# there are for the dashboad
+##for more endpoints check out the   src/pages/api folder
+
+there are for the dashboad
 src/pages/api/budgetCategories.tsx 
 src/pages/api/careerTools.tsx 
 src/pages/api/communitySupport.tsx 
