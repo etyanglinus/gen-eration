@@ -1,3 +1,4 @@
+"use client";
 import { PrismaClient } from '@prisma/client';
 import bcrypt from 'bcrypt'; // Make sure to install bcrypt
 import jwt from 'jsonwebtoken'; // Make sure to install jsonwebtoken
