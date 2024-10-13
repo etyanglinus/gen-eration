@@ -22,7 +22,7 @@ const Sidebar = () => {
           <li><Link href="/dashboard/budgeting"><span>Budgeting Tools</span></Link></li>
           <li><Link href="/dashboard/career"><span>Career Related</span></Link></li>
           <li><Link href="/dashboard/resources"><span>Financial Education</span></Link></li>
-          <li><Link href="/dashboard/scholarships"><span>Scholarships</span></Link></li>
+          <li><Link href="/dashboard/support"><span>Community</span></Link></li>
           <li><Link href="/dashboard/settings"><span>Settings</span></Link></li>
         </ul>
       </nav>
@@ -48,19 +48,20 @@ const Sidebar = () => {
           text-align: center;
           padding: 10px;
           background-color: royalblue;
+          margin-bottom: 20px; /* Space below the logo */
         }
 
         .logo-image {
           background-color: white;
           padding: 10px;
-          border-radius: 8px;
           width: 150px; /* Width set to control the size */
-          height: auto; /* Maintain the logo's aspect ratio */
+          height: 60px; /* Fixed height for a rectangular appearance */
+          border-radius: 12px
           display: block;
           margin: 0 auto; /* Center the image */
+          object-fit: contain; /* Maintains the aspect ratio */
         }
         
-
         .menu {
           flex-grow: 1;
           padding-left: 0;

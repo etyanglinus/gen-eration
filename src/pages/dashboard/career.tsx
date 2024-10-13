@@ -9,31 +9,66 @@ const CareerTools = () => {
     cityA: 1500,
     cityB: 1800,
   });
+  const [comparisonResult, setComparisonResult] = useState('');
 
-  const calculateSalaryProjection = (career: string) => {
-    switch (career) {
-      case 'Engineering':
-        setSalary(60000);
-        break;
-      case 'Teaching':
-        setSalary(40000);
-        break;
-      case 'Business':
-        setSalary(50000);
-        break;
-      default:
-        setSalary(0);
+  // API call to calculate salary projection
+  const calculateSalaryProjection = async (career) => {
+    try {
+      const response = await fetch('/api/careerTools', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ action: 'salaryProjection', career }),
+      });
+      const data = await response.json();
+      setSalary(data.salary);
+    } catch (error) {
+      console.error('Error calculating salary projection:', error);
     }
   };
 
-  const calculateDebtRepayment = (interestRate: number, term: number) => {
-    const monthlyRate = interestRate / 12 / 100;
-    const payment = (debt * monthlyRate) / (1 - Math.pow(1 + monthlyRate, -term));
-    setMonthlyPayment(payment);
+  // API call to calculate debt repayment
+  const calculateDebtRepayment = async (interestRate, term) => {
+    try {
+      const response = await fetch('/api/careerTools', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          action: 'debtRepayment',
+          debt,
+          interestRate,
+          term,
+        }),
+      });
+      const data = await response.json();
+      setMonthlyPayment(data.monthlyPayment);
+    } catch (error) {
+      console.error('Error calculating debt repayment:', error);
+    }
   };
 
-  const costOfLivingComparison = () => {
-    return livingCosts.cityA < livingCosts.cityB ? 'City A is cheaper' : 'City B is cheaper';
+  // API call to compare cost of living
+  const costOfLivingComparison = async () => {
+    try {
+      const response = await fetch('/api/careerTools', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          action: 'costOfLiving',
+          cityA: livingCosts.cityA,
+          cityB: livingCosts.cityB,
+        }),
+      });
+      const data = await response.json();
+      setComparisonResult(data.comparison);
+    } catch (error) {
+      console.error('Error comparing cost of living:', error);
+    }
   };
 
   return (
@@ -80,7 +115,10 @@ const CareerTools = () => {
             <p>City A: Ksh {livingCosts.cityA.toLocaleString()}</p>
             <p>City B: Ksh {livingCosts.cityB.toLocaleString()}</p>
           </div>
-          <p className="comparison-result">{costOfLivingComparison()}</p>
+          <button onClick={costOfLivingComparison} className="compare-btn">
+            Compare Costs
+          </button>
+          {comparisonResult && <p className="comparison-result">{comparisonResult}</p>}
         </div>
       </div>
 
@@ -152,10 +190,25 @@ const CareerTools = () => {
           font-size: 16px;
         }
 
+        .compare-btn {
+          padding: 10px 20px;
+          background-color: #2980b9;
+          color: white;
+          border: none;
+          border-radius: 8px;
+          cursor: pointer;
+          font-size: 16px;
+        }
+
+        .compare-btn:hover {
+          background-color: #1f618d;
+        }
+
         .comparison-result {
           font-size: 18px;
           font-weight: 500;
           color: #16a085;
+          margin-top: 15px;
         }
       `}</style>
     </DashboardLayout>

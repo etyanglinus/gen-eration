@@ -1,21 +1,104 @@
 import { ArcElement, CategoryScale, Chart as ChartJS, Legend, LineElement, LinearScale, PointElement, Tooltip } from 'chart.js';
+import { jsPDF } from 'jspdf';
+import { useEffect, useState } from 'react';
 import { Doughnut, Line } from 'react-chartjs-2';
+import Modal from 'react-modal';
+import { utils, writeFile } from 'xlsx';
 import DashboardLayout from '../../components/Dashboard/DashboardLayout';
 
 // Registering the necessary elements for the charts
 ChartJS.register(ArcElement, Tooltip, Legend, CategoryScale, LinearScale, LineElement, PointElement);
 
 const SavingsSummary = () => {
-  const currentUser = "User"; // Replace with the actual user name if available
-  const currentBalance = "Ksh 50,000"; // Replace with actual balance logic
+  const [savingsData, setSavingsData] = useState(null);
+  const [error, setError] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState('');
+  const [phoneNumber, setPhoneNumber] = useState('');
+  const userId = "1"; // Replace with the actual user ID
 
-  // Sample data for the charts
+  useEffect(() => {
+    const fetchSavingsSummary = async () => {
+      try {
+        const response = await fetch(`/api/savingsSummary/${userId}`);
+        if (!response.ok) {
+          throw new Error('Failed to fetch savings summary');
+        }
+        const data = await response.json();
+        setSavingsData(data);
+      } catch (err) {
+        setError(err.message);
+        console.error('Error fetching savings summary:', err);
+      }
+    };
+
+    fetchSavingsSummary();
+    const interval = setInterval(fetchSavingsSummary, 30000); // Poll every 30 seconds
+    return () => clearInterval(interval); // Clean up
+  }, [userId]);
+
+  // Handle modal
+  const openModal = () => setIsModalOpen(true);
+  const closeModal = () => setIsModalOpen(false);
+
+  const handlePaymentSubmit = async () => {
+    try {
+      const response = await fetch('/api/initiatePayment', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ paymentMethod, phoneNumber }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to initiate payment');
+      }
+      // Handle success case
+      closeModal();
+    } catch (error) {
+      console.error('Payment initiation error:', error);
+    }
+  };
+
+  // Export functions
+  const exportPDF = () => {
+    const doc = new jsPDF();
+    doc.text('Recent Transactions', 10, 10);
+    let yPosition = 20;
+    savingsData.recentTransactions.forEach((transaction) => {
+      doc.text(`Transaction ID: ${transaction.id} - Amount: ${transaction.amount}`, 10, yPosition);
+      yPosition += 10;
+    });
+    doc.save('transactions.pdf');
+  };
+
+  const exportExcel = () => {
+    const ws = utils.json_to_sheet(savingsData.recentTransactions);
+    const wb = utils.book_new();
+    utils.book_append_sheet(wb, ws, 'Transactions');
+    writeFile(wb, 'transactions.xlsx');
+  };
+
+  const exportCSV = () => {
+    const ws = utils.json_to_sheet(savingsData.recentTransactions);
+    const wb = utils.book_new();
+    utils.book_append_sheet(wb, ws, 'Transactions');
+    writeFile(wb, 'transactions.csv');
+  };
+
+  if (error) {
+    return <div>Error: {error}</div>;
+  }
+
+  if (!savingsData) {
+    return <div>Loading...</div>;
+  }
+
   const goalProgressData = {
     labels: ['Completed', 'Remaining'],
     datasets: [
       {
         label: 'Goal Progress',
-        data: [60, 40], // 60% completed
+        data: [60, 40], // You can replace these with dynamic data as needed
         backgroundColor: ['orange', 'lightgray'],
         borderWidth: 1,
       },
@@ -27,7 +110,7 @@ const SavingsSummary = () => {
     datasets: [
       {
         label: 'Projected Growth',
-        data: [50000, 52000, 54000, 56000, 58000, 60000], // Example data
+        data: savingsData.projectedGrowth, // Using fetched data
         fill: false,
         borderColor: 'royalblue',
         tension: 0.1,
@@ -39,12 +122,12 @@ const SavingsSummary = () => {
     <DashboardLayout>
       <div className="container">
         <div className="header-section">
-          <h3>Welcome, {currentUser}!</h3>
+          <h3>Welcome, User!</h3> {/* Replace with actual user name if available */}
           <div className="balance-section">
-            <p>Current Balance: <strong>{currentBalance}</strong></p>
+            <p>Current Balance: <strong>Ksh {savingsData.currentBalance}</strong></p>
             <div className="button-group">
-              <button className="add-funds-button">Add Funds</button>
-              <button className="withdraw-button">Withdraw</button>
+              <button className="add-funds-button" onClick={openModal}>Add Funds</button>
+              <button className="withdraw-button" onClick={openModal}>Withdraw</button>
             </div>
           </div>
         </div>
@@ -52,7 +135,6 @@ const SavingsSummary = () => {
         <h4>Your Savings Summary</h4>
 
         <div className="summary-sections">
-
           {/* Projected Growth - Line Chart */}
           <div className="line-chart-card">
             <h4>Projected Growth</h4>
@@ -61,7 +143,7 @@ const SavingsSummary = () => {
             </div>
           </div>
 
-          {/* Goal Progress - Donut Chart (Outside Card) */}
+          {/* Goal Progress - Donut Chart */}
           <div className="donut-chart-container">
             <h4>Goal Progress</h4>
             <div className="chart-container">
@@ -70,9 +152,12 @@ const SavingsSummary = () => {
           </div>
         </div>
 
-        {/* Recent Transactions - Table (at bottom) */}
+        {/* Recent Transactions */}
         <div className="transaction-section">
           <h4>Recent Transactions</h4>
+          <button onClick={exportPDF}>Export as PDF</button>
+          <button onClick={exportExcel}>Export as Excel</button>
+          <button onClick={exportCSV}>Export as CSV</button>
           <table className="transaction-table">
             <thead>
               <tr>
@@ -83,22 +168,34 @@ const SavingsSummary = () => {
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td>#TXN1234</td>
-                <td>Oct 3, 2024</td>
-                <td>M-Pesa</td>
-                <td>Ksh 5,000</td>
-              </tr>
-              <tr>
-                <td>#TXN1235</td>
-                <td>Oct 1, 2024</td>
-                <td>Bank Transfer</td>
-                <td>Ksh 2,000</td>
-              </tr>
+              {savingsData.recentTransactions.map((transaction) => (
+                <tr key={transaction.id}>
+                  <td>{transaction.id}</td>
+                  <td>{transaction.time}</td>
+                  <td>{transaction.paymentMode}</td>
+                  <td>{transaction.amount}</td>
+                </tr>
+              ))}
             </tbody>
           </table>
         </div>
       </div>
+
+      {/* Add Funds / Withdraw Modal */}
+      <Modal isOpen={isModalOpen} onRequestClose={closeModal}>
+        <h2>Choose Payment Method</h2>
+        <select onChange={(e) => setPaymentMethod(e.target.value)}>
+          <option value="M-Pesa">M-Pesa</option>
+          <option value="Bank Transfer">Bank Transfer</option>
+        </select>
+        <input
+          type="text"
+          placeholder="Phone Number"
+          value={phoneNumber}
+          onChange={(e) => setPhoneNumber(e.target.value)}
+        />
+        <button onClick={handlePaymentSubmit}>Submit</button>
+      </Modal>
 
       {/* Scoped CSS for this component */}
       <style jsx>{`
@@ -107,8 +204,8 @@ const SavingsSummary = () => {
         }
 
         .container {
-          margin-left: 250px; /* Add left margin to avoid obstruction by sidebar */
-          padding: 20px; /* Add padding for better spacing */
+          margin-left: 250px;
+          padding: 20px;
         }
 
         .header-section {
@@ -165,20 +262,7 @@ const SavingsSummary = () => {
           gap: 20px;
         }
 
-        .card {
-          padding: 20px;
-          background-color: white;
-          border-radius: 8px;
-          box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-          color: black;
-        }
-
-        .line-chart-card {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-        }
-
+        .line-chart-card,
         .donut-chart-container {
           display: flex;
           flex-direction: column;
@@ -202,17 +286,19 @@ const SavingsSummary = () => {
 
         .transaction-table th,
         .transaction-table td {
-          padding: 8px;
-          text-align: left;
-          border-bottom: 1px solid #ddd;
+          padding: 10px;
+          border: 1px solid #ddd;
         }
 
         .transaction-table th {
-          background-color: royalblue;
-          color: white;
+          background-color: #f8f8f8;
         }
 
-        .transaction-table tr:hover {
+        .transaction-table tbody tr:nth-child(even) {
+          background-color: #f8f8f8;
+        }
+
+        .transaction-table tbody tr:hover {
           background-color: #f1f1f1;
         }
       `}</style>

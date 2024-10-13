@@ -1,64 +1,99 @@
+import { useEffect, useState } from 'react';
 import DashboardLayout from '../../components/Dashboard/DashboardLayout';
 
 const CommunitySupport = () => {
-  const savingsGroups = [
-    { name: 'Graduation Trip Fund', description: 'Join to save collectively for an unforgettable graduation trip!' },
-    { name: 'Emergency Fund Pool', description: 'Contribute to a shared fund to help members in need.' },
-    { name: 'First Job Outfits', description: 'Save together for essential work attire for your first job.' },
-  ];
+  const [savingsGroups, setSavingsGroups] = useState([]);
+  const [discussionTopics, setDiscussionTopics] = useState([]);
 
-  const discussionTopics = [
-    { title: 'Budgeting Tips', description: 'Share your best strategies for budgeting as a student.' },
-    { title: 'Saving for Emergencies', description: 'Discuss how to build an emergency fund effectively.' },
-    { title: 'Investing Basics', description: 'Ask questions and share resources on getting started with investing.' },
-  ];
+  useEffect(() => {
+    const fetchCommunitySupport = async () => {
+      try {
+        const response = await fetch('/api/communitySupport');
+        const data = await response.json();
+
+        setSavingsGroups(data.savingsGroups);
+        setDiscussionTopics(data.discussionTopics);
+      } catch (error) {
+        console.error('Error fetching community support data:', error);
+      }
+    };
+
+    fetchCommunitySupport();
+  }, []);
 
   return (
     <DashboardLayout>
-      <h3>Community & Peer Support</h3>
+      <div className="community-support">
+        <h3>Community & Peer Support</h3>
 
-      <div className="section">
-        <h4>Savings Groups</h4>
-        <ul>
-          {savingsGroups.map((group, index) => (
-            <li key={index}>
-              <strong>{group.name}</strong>: {group.description}
-            </li>
-          ))}
-        </ul>
+        {/* Savings Groups Section */}
+        <div className="section savings-groups">
+          <h4>Savings Groups</h4>
+          <ul>
+            {savingsGroups.map((group, index) => (
+              <li key={index}>
+                <strong>{group.name}</strong>: {group.description}
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        {/* Discussion Forums Section */}
+        <div className="section discussion-forums">
+          <h4>Discussion Forums</h4>
+          <ul>
+            {discussionTopics.map((topic, index) => (
+              <li key={index}>
+                <strong>{topic.title}</strong>: {topic.description}
+              </li>
+            ))}
+          </ul>
+        </div>
       </div>
 
-      <div className="section">
-        <h4>Discussion Forums</h4>
-        <ul>
-          {discussionTopics.map((topic, index) => (
-            <li key={index}>
-              <strong>{topic.title}</strong>: {topic.description}
-            </li>
-          ))}
-        </ul>
-      </div>
-
+      {/* Styling */}
       <style jsx>{`
-        .section {
-          margin-top: 20px;
+        .community-support {
           padding: 20px;
-          background-color: white;
-          border-radius: 8px;
+          padding-left: 250px; /* Padding from the sidebar */
+          font-family: 'sans-serif';
+        }
+
+        h3 {
+          font-size: 28px;
+          font-weight: 600;
+          color: #333;
+          margin-bottom: 30px;
+        }
+
+        .section {
+          background-color: #fff;
+          padding: 20px;
+          border-radius: 12px;
           box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+          margin-bottom: 30px;
         }
 
         h4 {
-          margin-bottom: 10px;
+          font-size: 22px;
+          font-weight: 500;
+          margin-bottom: 15px;
+          color: #2c3e50;
         }
 
         ul {
           list-style-type: none;
           padding: 0;
+          margin: 0;
         }
 
         li {
           margin: 5px 0;
+          font-size: 16px;
+        }
+
+        strong {
+          color: #2980b9;
         }
       `}</style>
     </DashboardLayout>

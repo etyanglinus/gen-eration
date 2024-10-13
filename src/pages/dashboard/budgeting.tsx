@@ -1,37 +1,60 @@
 import 'chart.js/auto';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Pie } from 'react-chartjs-2';
 import DashboardLayout from '../../components/Dashboard/DashboardLayout';
 
 const BudgetPlanner = () => {
-  const [budgetCategories, setBudgetCategories] = useState([
-    { id: 1, name: 'Housing', planned: 20000, actual: 19000 },
-    { id: 2, name: 'Food', planned: 10000, actual: 12000 },
-    { id: 3, name: 'Entertainment', planned: 5000, actual: 4000 },
-    { id: 4, name: 'Transportation', planned: 3000, actual: 3200 },
-  ]);
-
+  const [budgetCategories, setBudgetCategories] = useState<any[]>([]);
   const [newCategory, setNewCategory] = useState({ name: '', planned: '', actual: '' });
 
-  // Add new category
-  const addCategory = () => {
-    if (newCategory.name && newCategory.planned && newCategory.actual) {
-      setBudgetCategories([
-        ...budgetCategories,
-        {
-          id: budgetCategories.length + 1,
-          name: newCategory.name,
-          planned: parseInt(newCategory.planned),
-          actual: parseInt(newCategory.actual),
-        },
-      ]);
-      setNewCategory({ name: '', planned: '', actual: '' }); // Clear form after submission
+  // Fetch existing budget categories from the backend
+  const fetchBudgetCategories = async () => {
+    try {
+      const response = await fetch('/api/budget-categories');
+      if (!response.ok) throw new Error('Failed to fetch budget categories');
+      const data = await response.json();
+      setBudgetCategories(data);
+    } catch (error) {
+      console.error('Error fetching budget categories:', error);
     }
   };
 
-  // Delete category
-  const deleteCategory = (id: number) => {
-    setBudgetCategories(budgetCategories.filter((category) => category.id !== id));
+  // Add new category to the backend
+  const addCategory = async () => {
+    if (newCategory.name && newCategory.planned && newCategory.actual) {
+      try {
+        const response = await fetch('/api/budget-categories', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            name: newCategory.name,
+            planned: parseInt(newCategory.planned),
+            actual: parseInt(newCategory.actual),
+          }),
+        });
+        if (!response.ok) throw new Error('Failed to add category');
+        const addedCategory = await response.json();
+        setBudgetCategories([...budgetCategories, addedCategory]);
+        setNewCategory({ name: '', planned: '', actual: '' }); // Clear form after submission
+      } catch (error) {
+        console.error('Error adding category:', error);
+      }
+    }
+  };
+
+  // Delete category from the backend
+  const deleteCategory = async (id: number) => {
+    try {
+      const response = await fetch(`/api/budget-categories/${id}`, {
+        method: 'DELETE',
+      });
+      if (!response.ok) throw new Error('Failed to delete category');
+      setBudgetCategories(budgetCategories.filter((category) => category.id !== id));
+    } catch (error) {
+      console.error('Error deleting category:', error);
+    }
   };
 
   // Spending data for the pie chart
@@ -45,6 +68,10 @@ const BudgetPlanner = () => {
       },
     ],
   };
+
+  useEffect(() => {
+    fetchBudgetCategories();
+  }, []);
 
   return (
     <DashboardLayout>

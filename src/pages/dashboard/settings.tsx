@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import DashboardLayout from '../../components/Dashboard/DashboardLayout';
 
@@ -9,6 +10,28 @@ interface Setting {
   link: string;
 }
 
+// Sample settings data simulating an API response
+const sampleSettings: Setting[] = [
+  {
+    id: 1,
+    name: 'Account Settings',
+    description: 'Manage your account settings, including username and email.',
+    link: '/settings/account',
+  },
+  {
+    id: 2,
+    name: 'Notification Preferences',
+    description: 'Set your preferences for receiving notifications.',
+    link: '/settings/notifications',
+  },
+  {
+    id: 3,
+    name: 'Privacy Settings',
+    description: 'Manage your privacy settings and control data sharing.',
+    link: '/settings/privacy',
+  },
+];
+
 const Settings = () => {
   // Use the Setting[] type for the useState hook
   const [settings, setSettings] = useState<Setting[]>([]);
@@ -16,28 +39,6 @@ const Settings = () => {
 
   // Simulate fetching settings from an API
   const fetchSettings = async () => {
-    // Sample data simulating an API response
-    const sampleSettings: Setting[] = [
-      {
-        id: 1,
-        name: 'Account Settings',
-        description: 'Manage your account settings, including username and email.',
-        link: 'https://example.com/settings/account',
-      },
-      {
-        id: 2,
-        name: 'Notification Preferences',
-        description: 'Set your preferences for receiving notifications.',
-        link: 'https://example.com/settings/notifications',
-      },
-      {
-        id: 3,
-        name: 'Privacy Settings',
-        description: 'Manage your privacy settings and control data sharing.',
-        link: 'https://example.com/settings/privacy',
-      },
-    ];
-
     // Simulate network delay
     setTimeout(() => {
       setSettings(sampleSettings);
@@ -58,15 +59,24 @@ const Settings = () => {
       <div className="settings-section">
         <h3>Settings</h3>
 
+        {/* Navigation Links for Settings Sections */}
+        <nav className="settings-nav">
+          {settings.map((setting) => (
+            <Link key={setting.id} href={setting.link} className="nav-link">
+              {setting.name}
+            </Link>
+          ))}
+        </nav>
+
         {/* Settings List Section */}
         <div className="tool-section settings-list">
           {settings.map((setting) => (
             <div className="setting-card" key={setting.id}>
               <h4>{setting.name}</h4>
               <p>{setting.description}</p>
-              <a href={setting.link} target="_blank" rel="noopener noreferrer">
+              <Link href={setting.link} className="settings-link">
                 Go to Settings
-              </a>
+              </Link>
             </div>
           ))}
         </div>
@@ -85,6 +95,25 @@ const Settings = () => {
           color: #333;
           margin-bottom: 30px;
           font-family: 'sans-serif';
+        }
+
+        .settings-nav {
+          display: flex;
+          gap: 15px;
+          margin-bottom: 20px;
+        }
+
+        .nav-link {
+          padding: 10px 15px;
+          background-color: #e0e0e0;
+          border-radius: 5px;
+          text-decoration: none;
+          color: #333;
+          font-weight: bold;
+        }
+
+        .nav-link:hover {
+          background-color: #d0d0d0;
         }
 
         .tool-section {
@@ -119,7 +148,7 @@ const Settings = () => {
           font-family: 'sans-serif';
         }
 
-        a {
+        .settings-link {
           display: inline-block;
           margin-top: 10px;
           padding: 10px 15px;
@@ -129,7 +158,7 @@ const Settings = () => {
           text-decoration: none;
         }
 
-        a:hover {
+        .settings-link:hover {
           background-color: darkblue;
         }
       `}</style>

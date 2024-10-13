@@ -1,32 +1,23 @@
+"use client";
 import Image from "next/image";
+import { useEffect, useState } from "react";
 
 const AboutSectionThree = () => {
-  const teamMembers = [
-    {
-      name: "Samuel Kodilu",
-      role: "CEO & Founder",
-      image: "/images/team/ceo.jpg",
-      description: "Samuel is the visionary behind the company, leading with a passion for innovation and growth.",
-    },
-    {
-      name: "Robert Aundo",
-      role: "COO",
-      image: "/images/team/coo.jpeg",
-      description: "Robert ensures smooth operations and implements strategic plans for company growth.",
-    },
-    {
-      name: "Justine Timberlake Omwenga",
-      role: "CFO",
-      image: "/images/team/cfo.jpg",
-      description: "Justine manages financial planning and risks, ensuring the company’s financial health.",
-    },
-    {
-      name: "Andrew Kyosi",
-      role: "Head of Marketing",
-      image: "/images/team/head of coporate.jpg",
-      description: "Andrew leads our marketing efforts, crafting strategies to enhance brand visibility.",
-    },
-  ];
+  const [teamMembers, setTeamMembers] = useState([]);
+
+  useEffect(() => {
+    const fetchTeamMembers = async () => {
+      try {
+        const response = await fetch('/api/team');
+        const data = await response.json();
+        setTeamMembers(data);
+      } catch (error) {
+        console.error('Error fetching team members:', error);
+      }
+    };
+
+    fetchTeamMembers();
+  }, []);
 
   return (
     <section className="py-16 md:py-20 lg:py-28">
@@ -39,7 +30,7 @@ const AboutSectionThree = () => {
                 Meet the Team
               </h3>
               <p className="text-base font-medium leading-relaxed text-body-color sm:text-lg sm:leading-relaxed">
-                Our team is made up of talented individuals who are committed to building the best software solutions. We bring diverse skills and a collaborative spirit to everything we do.
+                Our team is made up of talented individuals who are committed to building financial solutions. We bring diverse skills and a collaborative spirit to everything we do.
               </p>
             </div>
           </div>

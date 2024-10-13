@@ -1,21 +1,27 @@
+import { useEffect, useState } from 'react';
 import DashboardLayout from '../../components/Dashboard/DashboardLayout';
 
 const EducationalResources = () => {
-  const courses = [
-    { title: 'Budgeting Basics', link: '#' },
-    { title: 'Investing 101', link: '#' },
-    { title: 'Managing Credit', link: '#' },
-  ];
+  const [courses, setCourses] = useState([]);
+  const [workshops, setWorkshops] = useState([]);
+  const [faqs, setFaqs] = useState([]);
 
-  const workshops = [
-    { title: 'How to Build Credit', link: '#' },
-    { title: 'Navigating Life After College', link: '#' },
-  ];
+  useEffect(() => {
+    const fetchEducationalResources = async () => {
+      try {
+        const response = await fetch('/api/educationalResources');
+        const data = await response.json();
 
-  const faqs = [
-    { question: 'What is a budget?', answer: 'A budget is a plan that helps you manage your money.' },
-    { question: 'How can I start saving?', answer: 'Start by setting a savings goal and creating a plan to reach it.' },
-  ];
+        setCourses(data.courses);
+        setWorkshops(data.workshops);
+        setFaqs(data.faqs);
+      } catch (error) {
+        console.error('Error fetching educational resources:', error);
+      }
+    };
+
+    fetchEducationalResources();
+  }, []);
 
   return (
     <DashboardLayout>
@@ -62,7 +68,7 @@ const EducationalResources = () => {
       <style jsx>{`
         .educational-resources-section {
           padding: 20px;
-          padding-left: 240px; /* Padding from the sidebar */
+          padding-left: 240px;
         }
 
         h3 {
