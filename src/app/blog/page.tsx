@@ -4,8 +4,16 @@ import SingleBlog from "@/components/Blog/SingleBlog";
 import Breadcrumb from "@/components/Common/Breadcrumb";
 import { useEffect, useState } from "react";
 
+// Define the Blog interface
+interface Blog {
+  id: number; // or string
+  title: string;
+  content: string;
+  // Add other fields based on your API response
+}
+
 // Function to fetch blog data from the API
-async function fetchBlogData() {
+async function fetchBlogData(): Promise<Blog[]> {
   try {
     const res = await fetch("https://your-api-endpoint.com/blogs");
 
@@ -29,7 +37,7 @@ async function fetchBlogData() {
 }
 
 const Blog = () => {
-  const [blogData, setBlogData] = useState([]);
+  const [blogData, setBlogData] = useState<Blog[]>([]); // Specify the type for blogData
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
