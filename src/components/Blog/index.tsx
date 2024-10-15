@@ -1,6 +1,6 @@
 import SectionTitle from "../Common/SectionTitle";
 import SingleBlog from "./SingleBlog";
-import blogData from "./blogData";
+import blogData from "./blogData"; // This should be an array, not a function
 
 const Blog = () => {
   return (
