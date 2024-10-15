@@ -1,5 +1,6 @@
-import express from 'express';
-const router = express.Router();
+// src/pages/api/budgetCategories.ts
+
+import type { NextApiRequest, NextApiResponse } from 'next';
 
 let budgetCategories = [
   { id: 1, name: 'Housing', planned: 20000, actual: 19000 },
@@ -8,29 +9,41 @@ let budgetCategories = [
   { id: 4, name: 'Transportation', planned: 3000, actual: 3200 },
 ];
 
-// GET: Fetch all budget categories
-router.get('/', (req, res) => {
-  res.json(budgetCategories);
-});
+// Handler function for API requests
+export default function handler(req: NextApiRequest, res: NextApiResponse) {
+  const { method } = req;
 
-// POST: Add a new budget category
-router.post('/', (req, res) => {
-  const { name, planned, actual } = req.body;
-  const newCategory = {
-    id: budgetCategories.length + 1,
-    name,
-    planned,
-    actual,
-  };
-  budgetCategories.push(newCategory);
-  res.status(201).json(newCategory);
-});
+  switch (method) {
+    case 'GET':
+      // GET: Fetch all budget categories
+      res.status(200).json(budgetCategories);
+      break;
 
-// DELETE: Remove a budget category
-router.delete('/:id', (req, res) => {
-  const { id } = req.params;
-  budgetCategories = budgetCategories.filter((category) => category.id !== parseInt(id));
-  res.status(204).send();
-});
+    case 'POST':
+      // POST: Add a new budget category
+      const { name, planned, actual } = req.body;
+      const newCategory = {
+        id: budgetCategories.length + 1,
+        name,
+        planned,
+        actual,
+      };
+      budgetCategories.push(newCategory);
+      res.status(201).json(newCategory);
+      break;
 
-export default router;
+    case 'DELETE':
+      // DELETE: Remove a budget category
+      const { id } = req.query; // Get id from query params
+      budgetCategories = budgetCategories.filter(
+        (category) => category.id !== parseInt(id as string)
+      );
+      res.status(204).end(); // Send 204 No Content response
+      break;
+
+    default:
+      // Method not allowed
+      res.setHeader('Allow', ['GET', 'POST', 'DELETE']);
+      res.status(405).end(`Method ${method} Not Allowed`);
+  }
+}
