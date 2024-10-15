@@ -112,7 +112,7 @@ const SavingsPlansPage = () => {
         {joiningPlan && (
           <div className="confirmation-modal">
             <div className="modal-content">
-              <h4>You've Joined the Plan!</h4>
+              <h4>You&apos;ve Joined the Plan!</h4> {/* Fixed the unescaped single quote */}
               <p>
                 You have successfully joined the <strong>{joiningPlan.title}</strong>.
                 Here are your next steps:
