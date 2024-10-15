@@ -2,14 +2,23 @@
 import Image from "next/image";
 import { useEffect, useState } from "react";
 
+// Define an interface for the team member object
+interface TeamMember {
+  name: string;
+  image: string;
+  role: string;
+  description: string;
+}
+
 const AboutSectionThree = () => {
-  const [teamMembers, setTeamMembers] = useState([]);
+  // Use the interface to define the type for the state
+  const [teamMembers, setTeamMembers] = useState<TeamMember[]>([]);
 
   useEffect(() => {
     const fetchTeamMembers = async () => {
       try {
         const response = await fetch('/api/team');
-        const data = await response.json();
+        const data: TeamMember[] = await response.json(); // Ensure fetched data matches the type
         setTeamMembers(data);
       } catch (error) {
         console.error('Error fetching team members:', error);
