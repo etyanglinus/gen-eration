@@ -2,14 +2,28 @@
 import { useEffect, useState } from 'react';
 import Image from 'next/image'; // Import the Image component from Next.js
 
+// Define the Blog interface
+interface Blog {
+  id: number;
+  title: string;
+  paragraph: string;
+  image: string;
+  author: {
+    name: string;
+    designation: string;
+  };
+  publishDate: string;
+}
+
 const BlogList = () => {
-  const [blogs, setBlogs] = useState([]);
+  // Set the blogs state to be an array of Blog objects
+  const [blogs, setBlogs] = useState<Blog[]>([]);
 
   useEffect(() => {
     const fetchBlogs = async () => {
       try {
         const response = await fetch('/api/blog');
-        const data = await response.json();
+        const data: Blog[] = await response.json(); // Ensure the data matches the Blog type
         setBlogs(data);
       } catch (error) {
         console.error('Error fetching blog data:', error);
@@ -21,7 +35,7 @@ const BlogList = () => {
 
   return (
     <div>
-      {blogs.map(blog => (
+      {blogs.map((blog) => (
         <div key={blog.id}>
           <h2>{blog.title}</h2>
           <p>{blog.paragraph}</p>
