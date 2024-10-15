@@ -1,19 +1,12 @@
-"use client";
+// src/app/blog/page.tsx
+"use client"; // Ensure this component is treated as a client component
 
 import SingleBlog from "@/components/Blog/SingleBlog";
 import Breadcrumb from "@/components/Common/Breadcrumb";
 import { useEffect, useState } from "react";
 
-// Define the Blog interface
-interface Blog {
-  id: number; // or string
-  title: string;
-  content: string;
-  // Add other fields based on your API response
-}
-
 // Function to fetch blog data from the API
-async function fetchBlogData(): Promise<Blog[]> {
+async function fetchBlogData() {
   try {
     const res = await fetch("https://your-api-endpoint.com/blogs");
 
@@ -37,7 +30,7 @@ async function fetchBlogData(): Promise<Blog[]> {
 }
 
 const Blog = () => {
-  const [blogData, setBlogData] = useState<Blog[]>([]); // Specify the type for blogData
+  const [blogData, setBlogData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
