@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useState } from 'react';
 
 const SignupPage = () => {
+  // Set initial state to empty strings for form fields
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -11,11 +12,12 @@ const SignupPage = () => {
     password: '',
   });
 
-  const [error, setError] = useState(null);
-  const [successMessage, setSuccessMessage] = useState(null);
+  // Define error and successMessage state types as string | null
+  const [error, setError] = useState<string | null>(null);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
   // Handle input changes
-  const handleChange = (e) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData({
       ...formData,
@@ -24,7 +26,7 @@ const SignupPage = () => {
   };
 
   // Handle form submission
-  const handleSignup = async (e) => {
+  const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
     setSuccessMessage(null);
