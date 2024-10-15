@@ -1,40 +1,36 @@
-// src/app/blog/page.tsx
-"use client"; // Ensure this component is treated as a client component
+"use client"; // Mark as a client component
 
 import SingleBlog from "@/components/Blog/SingleBlog";
 import Breadcrumb from "@/components/Common/Breadcrumb";
 import { useEffect, useState } from "react";
+import { Blog } from "@/types/blog"; // Ensure this is the correct path to your Blog type
 
 // Function to fetch blog data from the API
-async function fetchBlogData() {
+async function fetchBlogData(): Promise<Blog[]> { // Specify that the function returns an array of Blog objects
   try {
     const res = await fetch("https://your-api-endpoint.com/blogs");
 
-    // Check if response is OK (status code 2xx)
     if (!res.ok) {
       throw new Error(`Failed to fetch blog data: ${res.statusText}`);
     }
 
-    // Check if response is in JSON format
     const contentType = res.headers.get("content-type");
     if (!contentType || !contentType.includes("application/json")) {
       throw new Error("Response is not JSON");
     }
 
-    // Parse the response as JSON
     return await res.json();
   } catch (error) {
     console.error("Error fetching blog data:", error.message);
-    throw error; // Rethrow error to handle it in the component
+    throw error;
   }
 }
 
-const Blog = () => {
-  const [blogData, setBlogData] = useState([]);
+const BlogPage = () => {
+  const [blogData, setBlogData] = useState<Blog[]>([]); // Explicitly type the blogData state as an array of Blog objects
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  // Fetch blog data when the component mounts
   useEffect(() => {
     const loadBlogData = async () => {
       try {
@@ -67,13 +63,13 @@ const Blog = () => {
               <p>Loading...</p>
             ) : error ? (
               <p>Error: {error}</p>
-            ) : Array.isArray(blogData) && blogData.length > 0 ? (
+            ) : blogData.length > 0 ? (
               blogData.map((blog) => (
                 <div
-                  key={blog.id}
+                  key={blog.id} // Now TypeScript understands that blog has an id property
                   className="w-full px-4 md:w-2/3 lg:w-1/2 xl:w-1/3"
                 >
-                  <SingleBlog blog={blog} />
+                  <SingleBlog blogId={blog.id} /> {/* Pass blogId to the SingleBlog component */}
                 </div>
               ))
             ) : (
@@ -148,4 +144,4 @@ const Blog = () => {
   );
 };
 
-export default Blog;
+export default BlogPage;
