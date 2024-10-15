@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from 'react';
+import Image from 'next/image'; // Import the Image component from Next.js
 
 const BlogList = () => {
   const [blogs, setBlogs] = useState([]);
@@ -24,7 +25,15 @@ const BlogList = () => {
         <div key={blog.id}>
           <h2>{blog.title}</h2>
           <p>{blog.paragraph}</p>
-          <img src={blog.image} alt={blog.title} />
+          {/* Replace <img> with <Image /> */}
+          <Image 
+            src={blog.image} 
+            alt={blog.title} 
+            width={500} // Example width
+            height={300} // Example height
+            layout="responsive" // This will adjust image size responsively
+            priority 
+          />
           <div>
             <strong>{blog.author.name}</strong> - {blog.author.designation}
           </div>
