@@ -1,5 +1,3 @@
-// src/app/signin/page.tsx
-
 "use client"; // Mark as a Client Component
 
 import React, { useState } from 'react';
@@ -17,7 +15,7 @@ const SignInPage: React.FC = () => {
 
     try {
       // Example API call to your backend to handle sign-in
-      const response = await fetch('/api/auth/signin', {
+      const response = await fetch('/api/signin', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
