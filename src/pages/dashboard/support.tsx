@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react';
 import DashboardLayout from '../../components/Dashboard/DashboardLayout';
+import { SavingsGroup, DiscussionTopic } from '@/types/communitySupport'; // Adjust the import path as necessary
 
 const CommunitySupport = () => {
-  const [savingsGroups, setSavingsGroups] = useState([]);
-  const [discussionTopics, setDiscussionTopics] = useState([]);
+  const [savingsGroups, setSavingsGroups] = useState<SavingsGroup[]>([]);
+  const [discussionTopics, setDiscussionTopics] = useState<DiscussionTopic[]>([]);
 
   useEffect(() => {
     const fetchCommunitySupport = async () => {
