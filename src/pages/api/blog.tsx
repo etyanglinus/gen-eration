@@ -1,6 +1,6 @@
-// pages/api/blog.ts
+// src/pages/api/blog.ts
 
-import { Blog } from "@/types/blog";
+import { Blog } from "@/types/blog"; // Ensure this path is correct
 import type { NextApiRequest, NextApiResponse } from 'next';
 
 const blogData: Blog[] = [
