@@ -1,10 +1,13 @@
+// src/pages/dashboard/resources.tsx
+
 import { useEffect, useState } from 'react';
 import DashboardLayout from '../../components/Dashboard/DashboardLayout';
+import { Course, Workshop, FAQ } from '@/types/resources'; // Adjust the import path as necessary
 
 const EducationalResources = () => {
-  const [courses, setCourses] = useState([]);
-  const [workshops, setWorkshops] = useState([]);
-  const [faqs, setFaqs] = useState([]);
+  const [courses, setCourses] = useState<Course[]>([]);
+  const [workshops, setWorkshops] = useState<Workshop[]>([]);
+  const [faqs, setFaqs] = useState<FAQ[]>([]);
 
   useEffect(() => {
     const fetchEducationalResources = async () => {
