@@ -1,21 +1,27 @@
+// src/components/Blog/index.tsx
+
 import { useEffect, useState } from 'react';
 import SectionTitle from "../Common/SectionTitle";
 import SingleBlog from "./SingleBlog";
 
-// Define the Blog type
+// Define the Blog type (make sure it matches the API structure)
+interface Author {
+  name: string;
+  designation: string;
+  image: string; // Add image if needed
+}
+
 interface Blog {
   id: number;
   title: string;
   paragraph: string;
   image: string;
-  author: {
-    name: string;
-    designation: string;
-  };
+  author: Author; // Update this line to use the Author type
+  tags: string[];  // Add the tags property here
   publishDate: string;
 }
 
-const Blog = () => {
+const BlogComponent = () => {
   const [blogs, setBlogs] = useState<Blog[]>([]); // State to store blogs
 
   useEffect(() => {
@@ -56,4 +62,4 @@ const Blog = () => {
   );
 };
 
-export default Blog;
+export default BlogComponent;
