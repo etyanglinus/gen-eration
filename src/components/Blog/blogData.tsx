@@ -22,8 +22,8 @@ const BlogList = () => {
   useEffect(() => {
     const fetchBlogs = async () => {
       try {
-        const response = await fetch('/api/blog');
-        const data: Blog[] = await response.json(); // Ensure the data matches the Blog type
+        const response = await fetch('pages/api/blog.tsx');
+        const data: Blog[] = await response.json(); 
         setBlogs(data);
       } catch (error) {
         console.error('Error fetching blog data:', error);
