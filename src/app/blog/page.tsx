@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 import { Blog } from "@/types/blog"; // Ensure this is the correct path to your Blog type
 
 // Function to fetch blog data from the API
-async function fetchBlogData(): Promise<Blog[]> { // Specify that the function returns an array of Blog objects
+async function fetchBlogData(): Promise<Blog[]> {
   try {
     const res = await fetch("https://your-api-endpoint.com/blogs");
 
@@ -27,7 +27,7 @@ async function fetchBlogData(): Promise<Blog[]> { // Specify that the function r
 }
 
 const BlogPage = () => {
-  const [blogData, setBlogData] = useState<Blog[]>([]); // Explicitly type the blogData state as an array of Blog objects
+  const [blogData, setBlogData] = useState<Blog[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -66,10 +66,10 @@ const BlogPage = () => {
             ) : blogData.length > 0 ? (
               blogData.map((blog) => (
                 <div
-                  key={blog.id} // Now TypeScript understands that blog has an id property
+                  key={blog.id}
                   className="w-full px-4 md:w-2/3 lg:w-1/2 xl:w-1/3"
                 >
-                  <SingleBlog blogId={blog.id} /> {/* Pass blogId to the SingleBlog component */}
+                  <SingleBlog blog={blog} /> {/* Pass the entire blog object */}
                 </div>
               ))
             ) : (

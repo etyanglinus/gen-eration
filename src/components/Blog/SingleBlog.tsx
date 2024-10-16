@@ -1,22 +1,9 @@
 /* eslint-disable @next/next/no-img-element */
+import { Blog } from "@/types/blog";
 import React from 'react';
 
-// Define the Blog type
-interface Blog {
-  id: number;
-  title: string;
-  paragraph: string;
-  image: string;
-  author: {
-    name: string;
-    designation: string;
-  };
-  publishDate: string;
-}
-
-// Define the props type for SingleBlog
 interface SingleBlogProps {
-  blog: Blog; // Add blog prop here
+  blog: Blog; 
 }
 
 const SingleBlog: React.FC<SingleBlogProps> = ({ blog }) => {
