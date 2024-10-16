@@ -1,4 +1,3 @@
-import { SavingsData } from '@/types/savings'; // Adjust the import path as necessary
 import {
   ArcElement,
   CategoryScale,
@@ -10,22 +9,28 @@ import {
   Tooltip,
 } from 'chart.js';
 import { jsPDF } from 'jspdf';
+import { useRouter } from 'next/router'; // Import useRouter from Next.js
 import { useEffect, useState } from 'react';
 import { Doughnut, Line } from 'react-chartjs-2';
 import Modal from 'react-modal';
 import { utils, writeFile } from 'xlsx';
 import DashboardLayout from '../../components/Dashboard/DashboardLayout';
 
-// Registering the necessary elements for the charts
 ChartJS.register(ArcElement, Tooltip, Legend, CategoryScale, LinearScale, LineElement, PointElement);
 
 const SavingsSummary = () => {
-  const [savingsData, setSavingsData] = useState<SavingsData | null>(null); // Specify the type
+  const [savingsData, setSavingsData] = useState<SavingsData | null>(null);
+  const [userName, setUserName] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
-  const userId = "1"; // Replace with the actual user ID
+  const [amount, setAmount] = useState<number | ''>(''); // Amount field added
+  const [transactions, setTransactions] = useState<any[]>([]);
+  const [filteredTransactions, setFilteredTransactions] = useState<any[]>([]);
+  const userId = '1'; // Replace with the actual user ID
+
+  const router = useRouter(); // Initialize router
 
   useEffect(() => {
     const fetchSavingsSummary = async () => {
@@ -42,7 +47,37 @@ const SavingsSummary = () => {
       }
     };
 
+    const fetchUserName = async () => {
+      try {
+        const response = await fetch('https://amsha-gen-96609f863a46.herokuapp.com/api/user/id/1');
+        if (!response.ok) {
+          throw new Error('Failed to fetch user data');
+        }
+        const userData = await response.json();
+        setUserName(userData.name);
+      } catch (err) {
+        console.error('Error fetching user data:', err);
+      }
+    };
+
+    const fetchTransactions = async () => {
+      try {
+        const response = await fetch('https://amsha-gen-96609f863a46.herokuapp.com/api/transactions/tid/1');
+        if (!response.ok) {
+          throw new Error('Failed to fetch transactions');
+        }
+        const transactionData = await response.json();
+        setTransactions(transactionData);
+        setFilteredTransactions(transactionData); // Initially show all transactions
+      } catch (err) {
+        console.error('Error fetching transactions:', err);
+      }
+    };
+
     fetchSavingsSummary();
+    fetchUserName();
+    fetchTransactions();
+
     const interval = setInterval(fetchSavingsSummary, 30000); // Poll every 30 seconds
     return () => clearInterval(interval); // Clean up
   }, [userId]);
@@ -53,17 +88,19 @@ const SavingsSummary = () => {
 
   const handlePaymentSubmit = async () => {
     try {
-      const response = await fetch('/api/initiatePayment', {
+      const response = await fetch('https://amsha-gen-96609f863a46.herokuapp.com/api/transactions/deposit', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ paymentMethod, phoneNumber }),
+        body: JSON.stringify({ paymentMethod, phoneNumber, amount }),
       });
 
       if (!response.ok) {
         throw new Error('Failed to initiate payment');
       }
-      // Handle success case
+
+      // Handle success case and redirect
       closeModal();
+      router.push('/dashboard/waitForTransaction'); // Redirect to the waitForTransaction page
     } catch (error) {
       console.error('Payment initiation error:', error);
     }
@@ -73,7 +110,7 @@ const SavingsSummary = () => {
   const exportPDF = () => {
     if (!savingsData || !savingsData.recentTransactions) {
       console.error('No recent transactions to export.');
-      return; // Handle the case when recentTransactions is not available
+      return;
     }
     const doc = new jsPDF();
     doc.text('Recent Transactions', 10, 10);
@@ -88,7 +125,7 @@ const SavingsSummary = () => {
   const exportExcel = () => {
     if (!savingsData || !savingsData.recentTransactions) {
       console.error('No recent transactions to export.');
-      return; // Handle the case when recentTransactions is not available
+      return;
     }
     const ws = utils.json_to_sheet(savingsData.recentTransactions);
     const wb = utils.book_new();
@@ -99,7 +136,7 @@ const SavingsSummary = () => {
   const exportCSV = () => {
     if (!savingsData || !savingsData.recentTransactions) {
       console.error('No recent transactions to export.');
-      return; // Handle the case when recentTransactions is not available
+      return;
     }
     const ws = utils.json_to_sheet(savingsData.recentTransactions);
     const wb = utils.book_new();
@@ -107,11 +144,21 @@ const SavingsSummary = () => {
     writeFile(wb, 'transactions.csv');
   };
 
+  // Filter transactions
+  const handleFilter = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const filterValue = event.target.value.toLowerCase();
+    const filtered = transactions.filter((transaction) =>
+      transaction.id.toLowerCase().includes(filterValue) ||
+      transaction.paymentMode.toLowerCase().includes(filterValue)
+    );
+    setFilteredTransactions(filtered);
+  };
+
   if (error) {
     return <div>Error: {error}</div>;
   }
 
-  if (!savingsData) {
+  if (!savingsData || !userName) {
     return <div>Loading...</div>;
   }
 
@@ -132,7 +179,7 @@ const SavingsSummary = () => {
     datasets: [
       {
         label: 'Projected Growth',
-        data: savingsData.projectedGrowth, // Using fetched data
+        data: savingsData.projectedGrowth,
         fill: false,
         borderColor: 'royalblue',
         tension: 0.1,
@@ -144,7 +191,7 @@ const SavingsSummary = () => {
     <DashboardLayout>
       <div className="container">
         <div className="header-section">
-          <h3>Welcome, User!</h3> {/* Replace with actual user name if available */}
+          <h3>Welcome, {userName}!</h3>
           <div className="balance-section">
             <p>Current Balance: <strong>Ksh {savingsData.currentBalance}</strong></p>
             <div className="button-group">
@@ -157,7 +204,6 @@ const SavingsSummary = () => {
         <h4>Your Savings Summary</h4>
 
         <div className="summary-sections">
-          {/* Projected Growth - Line Chart */}
           <div className="line-chart-card">
             <h4>Projected Growth</h4>
             <div className="chart-container">
@@ -165,7 +211,6 @@ const SavingsSummary = () => {
             </div>
           </div>
 
-          {/* Goal Progress - Donut Chart */}
           <div className="donut-chart-container">
             <h4>Goal Progress</h4>
             <div className="chart-container">
@@ -174,9 +219,9 @@ const SavingsSummary = () => {
           </div>
         </div>
 
-        {/* Recent Transactions */}
         <div className="transaction-section">
           <h4>Recent Transactions</h4>
+          <input type="text" placeholder="Filter transactions" onChange={handleFilter} />
           <button onClick={exportPDF}>Export as PDF</button>
           <button onClick={exportExcel}>Export as Excel</button>
           <button onClick={exportCSV}>Export as CSV</button>
@@ -190,7 +235,7 @@ const SavingsSummary = () => {
               </tr>
             </thead>
             <tbody>
-              {savingsData.recentTransactions.map((transaction) => (
+              {filteredTransactions.map((transaction) => (
                 <tr key={transaction.id}>
                   <td>{transaction.id}</td>
                   <td>{transaction.time}</td>
@@ -203,10 +248,9 @@ const SavingsSummary = () => {
         </div>
       </div>
 
-      {/* Add Funds / Withdraw Modal */}
       <Modal isOpen={isModalOpen} onRequestClose={closeModal}>
-        <h2>Choose Payment Method</h2>
-        <select onChange={(e) => setPaymentMethod(e.target.value)}>
+        <h2>Deposit Funds</h2>
+        <select onChange={(e) => setPaymentMethod(e.target.value)} value={paymentMethod}>
           <option value="M-Pesa">M-Pesa</option>
           <option value="Bank Transfer">Bank Transfer</option>
         </select>
@@ -216,10 +260,16 @@ const SavingsSummary = () => {
           value={phoneNumber}
           onChange={(e) => setPhoneNumber(e.target.value)}
         />
+        <input
+          type="number"
+          placeholder="Amount"
+          value={amount}
+          onChange={(e) => setAmount(Number(e.target.value))}
+        />
         <button onClick={handlePaymentSubmit}>Submit</button>
+        <button onClick={closeModal}>Close</button>
       </Modal>
 
-      {/* Scoped CSS for this component */}
       <style jsx>{`
         * {
           font-family: 'Poppins', sans-serif;
