@@ -1,6 +1,6 @@
+import { useEffect, useState } from 'react';
 import SectionTitle from "../Common/SectionTitle";
 import SingleBlog from "./SingleBlog";
-import { useEffect, useState } from 'react';
 
 // Define the Blog type
 interface Blog {

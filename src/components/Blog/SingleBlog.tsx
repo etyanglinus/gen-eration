@@ -1,82 +1,34 @@
-"use client"; // Ensure this component is treated as a client component
+/* eslint-disable @next/next/no-img-element */
+import React from 'react';
 
-import { Blog } from "@/types/blog"; // Import Blog type from your types
-import Image from "next/image";
-import Link from "next/link";
-import { useEffect, useState } from "react";
-
-interface SingleBlogProps {
-  blogId: number;
+// Define the Blog type
+interface Blog {
+  id: number;
+  title: string;
+  paragraph: string;
+  image: string;
+  author: {
+    name: string;
+    designation: string;
+  };
+  publishDate: string;
 }
 
-const SingleBlog: React.FC<SingleBlogProps> = ({ blogId }) => {
-  const [blog, setBlog] = useState<Blog | null>(null);
+// Define the props type for SingleBlog
+interface SingleBlogProps {
+  blog: Blog; // Add blog prop here
+}
 
-  useEffect(() => {
-    const fetchBlog = async () => {
-      try {
-        const response = await fetch(`/api/blog?id=${blogId}`);
-        if (!response.ok) {
-          throw new Error("Failed to fetch blog");
-        }
-        const data = await response.json();
-        setBlog(data);
-      } catch (error) {
-        console.error("Error fetching blog data:", error);
-      }
-    };
-
-    fetchBlog();
-  }, [blogId]);
-
-  // If blog is not yet loaded, show a loading message or spinner
-  if (!blog) {
-    return <p>Loading...</p>;
-  }
-
-  const { title, image, paragraph, author, tags, publishDate } = blog;
-
+const SingleBlog: React.FC<SingleBlogProps> = ({ blog }) => {
   return (
-    <div className="group relative overflow-hidden rounded-sm bg-white shadow-one duration-300 hover:shadow-two dark:bg-dark dark:hover:shadow-gray-dark">
-      <Link href={`/blog-details/${blogId}`} className="relative block aspect-[37/22] w-full">
-        <span className="absolute right-6 top-6 z-20 inline-flex items-center justify-center rounded-full bg-primary px-4 py-2 text-sm font-semibold capitalize text-white">
-          {tags?.[0] || "Blog"}
-        </span>
-        {/* Dynamically load the image */}
-        {image && <Image src={image} alt={title} fill />}
-      </Link>
-      <div className="p-6 sm:p-8 md:px-6 md:py-8 lg:p-8 xl:px-5 xl:py-8 2xl:p-8">
-        <h3>
-          <Link
-            href={`/blog-details/${blogId}`}
-            className="mb-4 block text-xl font-bold text-black hover:text-primary dark:text-white dark:hover:text-primary sm:text-2xl"
-          >
-            {title}
-          </Link>
-        </h3>
-        <p className="mb-6 border-b border-body-color border-opacity-10 pb-6 text-base font-medium text-body-color dark:border-white dark:border-opacity-10">
-          {paragraph}
-        </p>
-        <div className="flex items-center">
-          <div className="mr-5 flex items-center border-r border-body-color border-opacity-10 pr-5 dark:border-white dark:border-opacity-10 xl:mr-3 xl:pr-3 2xl:mr-5 2xl:pr-5">
-            {author?.image && (
-              <div className="mr-4">
-                <div className="relative h-10 w-10 overflow-hidden rounded-full">
-                  <Image src={author.image} alt={author.name} fill />
-                </div>
-              </div>
-            )}
-            <div className="w-full">
-              <h4 className="mb-1 text-sm font-medium text-dark dark:text-white">By {author?.name}</h4>
-              <p className="text-xs text-body-color">{author?.designation}</p>
-            </div>
-          </div>
-          <div className="inline-block">
-            <h4 className="mb-1 text-sm font-medium text-dark dark:text-white">Date</h4>
-            <p className="text-xs text-body-color">{publishDate}</p>
-          </div>
-        </div>
-      </div>
+    <div className="single-blog">
+      <img src={blog.image} alt={blog.title} className="w-full h-auto" />
+      <h3 className="text-xl font-bold">{blog.title}</h3>
+      <p className="mt-2">{blog.paragraph}</p>
+      <p className="mt-4 text-sm text-gray-600">
+        By: {blog.author.name} ({blog.author.designation})
+      </p>
+      <p className="mt-1 text-xs text-gray-500">Published on: {blog.publishDate}</p>
     </div>
   );
 };
