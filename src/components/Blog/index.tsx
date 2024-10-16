@@ -1,8 +1,37 @@
 import SectionTitle from "../Common/SectionTitle";
 import SingleBlog from "./SingleBlog";
-import blogData from "./blogData"; // This should be an array, not a function
+import { useEffect, useState } from 'react';
+
+// Define the Blog type
+interface Blog {
+  id: number;
+  title: string;
+  paragraph: string;
+  image: string;
+  author: {
+    name: string;
+    designation: string;
+  };
+  publishDate: string;
+}
 
 const Blog = () => {
+  const [blogs, setBlogs] = useState<Blog[]>([]); // State to store blogs
+
+  useEffect(() => {
+    const fetchBlogs = async () => {
+      try {
+        const response = await fetch('/api/blog');
+        const data: Blog[] = await response.json();
+        setBlogs(data);
+      } catch (error) {
+        console.error('Error fetching blog data:', error);
+      }
+    };
+
+    fetchBlogs();
+  }, []);
+
   return (
     <section
       id="blog"
@@ -16,7 +45,7 @@ const Blog = () => {
         />
 
         <div className="grid grid-cols-1 gap-x-8 gap-y-10 md:grid-cols-2 md:gap-x-6 lg:gap-x-8 xl:grid-cols-3">
-          {blogData.map((blog) => (
+          {blogs.map((blog) => (
             <div key={blog.id} className="w-full">
               <SingleBlog blog={blog} />
             </div>
