@@ -61,6 +61,11 @@ const SavingsSummary = () => {
 
   // Export functions
   const exportPDF = () => {
+    if (!savingsData || !savingsData.recentTransactions) {
+      console.error('No recent transactions to export.');
+      return; // Handle the case when recentTransactions is not available
+    }
+
     const doc = new jsPDF();
     doc.text('Recent Transactions', 10, 10);
     let yPosition = 20;
@@ -72,6 +77,11 @@ const SavingsSummary = () => {
   };
 
   const exportExcel = () => {
+    if (!savingsData || !savingsData.recentTransactions) {
+      console.error('No recent transactions to export.');
+      return; // Handle the case when recentTransactions is not available
+    }
+
     const ws = utils.json_to_sheet(savingsData.recentTransactions);
     const wb = utils.book_new();
     utils.book_append_sheet(wb, ws, 'Transactions');
@@ -79,6 +89,11 @@ const SavingsSummary = () => {
   };
 
   const exportCSV = () => {
+    if (!savingsData || !savingsData.recentTransactions) {
+      console.error('No recent transactions to export.');
+      return; // Handle the case when recentTransactions is not available
+    }
+
     const ws = utils.json_to_sheet(savingsData.recentTransactions);
     const wb = utils.book_new();
     utils.book_append_sheet(wb, ws, 'Transactions');
