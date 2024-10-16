@@ -16,6 +16,7 @@ type BlogDetailsProps = {
   };
 };
 
+// Blog Details Component
 const BlogDetailsPage = ({ blog }: BlogDetailsProps) => {
   return (
     <section className="pb-[120px] pt-[150px]">
@@ -94,17 +95,44 @@ const BlogDetailsPage = ({ blog }: BlogDetailsProps) => {
   );
 };
 
+// Type for params
+type Params = {
+  id: string;
+};
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
-  const { id } = context.params; 
-  const response = await fetch(`https://api.example.com/blog-details/${id}`);
-  const blog = await response.json();
+  const { params } = context;
 
-  return {
-    props: {
-      blog,
-    },
-  };
+  // Ensure params and id are defined
+  if (!params || typeof params.id !== 'string') {
+    return {
+      notFound: true, // Return a 404 page if id is not provided
+    };
+  }
+
+  const { id } = params as Params; // Type assertion to ensure params has an id property
+
+  try {
+    const response = await fetch(`https://your-api-endpoint.com/blog-details/${id}`);
+
+    // Check if the response is ok
+    if (!response.ok) {
+      throw new Error(`Failed to fetch blog details: ${response.statusText}`);
+    }
+
+    const blog = await response.json();
+
+    return {
+      props: {
+        blog,
+      },
+    };
+  } catch (error) {
+    console.error("Error fetching blog details:", error);
+    return {
+      notFound: true, // Return a 404 page if an error occurs
+    };
+  }
 };
 
 export default BlogDetailsPage;
