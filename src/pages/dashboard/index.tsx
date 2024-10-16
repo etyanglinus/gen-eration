@@ -1,4 +1,14 @@
-import { ArcElement, CategoryScale, Chart as ChartJS, Legend, LineElement, LinearScale, PointElement, Tooltip } from 'chart.js';
+import { SavingsData } from '@/types/savings'; // Adjust the import path as necessary
+import {
+  ArcElement,
+  CategoryScale,
+  Chart as ChartJS,
+  Legend,
+  LineElement,
+  LinearScale,
+  PointElement,
+  Tooltip,
+} from 'chart.js';
 import { jsPDF } from 'jspdf';
 import { useEffect, useState } from 'react';
 import { Doughnut, Line } from 'react-chartjs-2';
@@ -10,8 +20,8 @@ import DashboardLayout from '../../components/Dashboard/DashboardLayout';
 ChartJS.register(ArcElement, Tooltip, Legend, CategoryScale, LinearScale, LineElement, PointElement);
 
 const SavingsSummary = () => {
-  const [savingsData, setSavingsData] = useState(null);
-  const [error, setError] = useState(null);
+  const [savingsData, setSavingsData] = useState<SavingsData | null>(null); // Specify the type
+  const [error, setError] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
@@ -65,7 +75,6 @@ const SavingsSummary = () => {
       console.error('No recent transactions to export.');
       return; // Handle the case when recentTransactions is not available
     }
-
     const doc = new jsPDF();
     doc.text('Recent Transactions', 10, 10);
     let yPosition = 20;
@@ -81,7 +90,6 @@ const SavingsSummary = () => {
       console.error('No recent transactions to export.');
       return; // Handle the case when recentTransactions is not available
     }
-
     const ws = utils.json_to_sheet(savingsData.recentTransactions);
     const wb = utils.book_new();
     utils.book_append_sheet(wb, ws, 'Transactions');
@@ -93,7 +101,6 @@ const SavingsSummary = () => {
       console.error('No recent transactions to export.');
       return; // Handle the case when recentTransactions is not available
     }
-
     const ws = utils.json_to_sheet(savingsData.recentTransactions);
     const wb = utils.book_new();
     utils.book_append_sheet(wb, ws, 'Transactions');
